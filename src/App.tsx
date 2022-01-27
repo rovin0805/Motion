@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import styled from 'styled-components';
 import { motion, Variants } from 'framer-motion';
 
@@ -21,9 +22,9 @@ const Box = styled(motion.div)`
 
 const Box2 = styled(motion.div)`
   display: grid;
-  width: 200px;
-  height: 200px;
-  background-color: rgba(255, 255, 255, 0.2);
+  width: 150px;
+  height: 150px;
+  background-color: rgba(255, 255, 255, 1);
   border-radius: 15px;
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1), 0 10px 20px rgba(0, 0, 0, 0.06);
 `;
@@ -35,6 +36,17 @@ const Circle = styled(motion.div)`
   place-self: center;
   border-radius: 35px;
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1), 0 10px 20px rgba(0, 0, 0, 0.06);
+`;
+
+const ConstraintBox = styled.div`
+  width: 400px;
+  height: 400px;
+  background-color: rgba(255, 255, 255, 0.4);
+  border-radius: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
 `;
 
 const boxVariants: Variants = {
@@ -73,6 +85,7 @@ const box2Variants: Variants = {
 };
 
 function App() {
+  const constraintBoxRef = useRef<HTMLDivElement>(null);
   return (
     <Wrapper>
       {/* variants */}
@@ -84,13 +97,18 @@ function App() {
       </Box>
 
       {/* gestures */}
-      <Box2
-        variants={box2Variants}
-        whileHover='hover'
-        whileTap='click'
-        drag
-        whileDrag='drag'
-      />
+      <ConstraintBox ref={constraintBoxRef}>
+        <Box2
+          variants={box2Variants}
+          whileHover='hover'
+          whileTap='click'
+          drag
+          whileDrag='drag'
+          dragConstraints={constraintBoxRef}
+          dragSnapToOrigin
+          // dragElastic={0.5}
+        />
+      </ConstraintBox>
     </Wrapper>
   );
 }
