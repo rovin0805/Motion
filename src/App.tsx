@@ -1,6 +1,6 @@
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import styled from 'styled-components';
-import { motion, Variants } from 'framer-motion';
+import { motion, useMotionValue, Variants } from 'framer-motion';
 
 const Wrapper = styled.div`
   height: 100vh;
@@ -10,23 +10,25 @@ const Wrapper = styled.div`
   align-items: center;
 `;
 
-const Box = styled(motion.div)`
+const BoxTemplate = styled(motion.div)`
   display: grid;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1), 0 10px 20px rgba(0, 0, 0, 0.06);
+  border-radius: 15px;
+  background-color: rgba(255, 255, 255, 1);
+`;
+const Box = styled(BoxTemplate)`
   grid-template-columns: repeat(2, 1fr);
   width: 200px;
   height: 200px;
   background-color: rgba(255, 255, 255, 0.2);
-  border-radius: 15px;
-  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1), 0 10px 20px rgba(0, 0, 0, 0.06);
 `;
-
-const Box2 = styled(motion.div)`
-  display: grid;
-  width: 150px;
-  height: 150px;
-  background-color: rgba(255, 255, 255, 1);
-  border-radius: 15px;
-  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1), 0 10px 20px rgba(0, 0, 0, 0.06);
+const Box2 = styled(BoxTemplate)`
+  width: 50px;
+  height: 50px;
+`;
+const Box3 = styled(BoxTemplate)`
+  width: 200px;
+  height: 200px;
 `;
 
 const Circle = styled(motion.div)`
@@ -39,8 +41,8 @@ const Circle = styled(motion.div)`
 `;
 
 const ConstraintBox = styled.div`
-  width: 400px;
-  height: 400px;
+  width: 200px;
+  height: 200px;
   background-color: rgba(255, 255, 255, 0.4);
   border-radius: 40px;
   display: flex;
@@ -86,6 +88,12 @@ const box2Variants: Variants = {
 
 function App() {
   const constraintBoxRef = useRef<HTMLDivElement>(null);
+  const x = useMotionValue(0);
+
+  useEffect(() => {
+    x.onChange(() => console.log(x.get()));
+  }, [x]);
+
   return (
     <Wrapper>
       {/* variants */}
@@ -109,6 +117,9 @@ function App() {
           // dragElastic={0.5}
         />
       </ConstraintBox>
+
+      {/* motion values */}
+      <Box3 drag='x' dragSnapToOrigin style={{ x }} />
     </Wrapper>
   );
 }
