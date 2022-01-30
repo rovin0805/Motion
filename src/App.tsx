@@ -1,6 +1,12 @@
 import { useEffect, useRef } from 'react';
 import styled from 'styled-components';
-import { motion, useMotionValue, Variants } from 'framer-motion';
+import {
+  motion,
+  MotionValue,
+  useMotionValue,
+  useTransform,
+  Variants,
+} from 'framer-motion';
 
 const Wrapper = styled.div`
   height: 100vh;
@@ -89,6 +95,7 @@ const box2Variants: Variants = {
 function App() {
   const constraintBoxRef = useRef<HTMLDivElement>(null);
   const x = useMotionValue(0);
+  const scale = useTransform(x, [-200, 0, 200], [1.5, 1, 0.1]); // interpolation value
 
   useEffect(() => {
     x.onChange(() => console.log(x.get()));
@@ -119,7 +126,7 @@ function App() {
       </ConstraintBox>
 
       {/* motion values */}
-      <Box3 drag='x' dragSnapToOrigin style={{ x }} />
+      <Box3 drag='x' dragSnapToOrigin style={{ x, scale }} />
     </Wrapper>
   );
 }
