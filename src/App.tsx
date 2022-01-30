@@ -1,6 +1,7 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import {
+  AnimatePresence,
   motion,
   useMotionValue,
   useTransform,
@@ -9,7 +10,7 @@ import {
 } from 'framer-motion';
 
 const Wrapper = styled(motion.div)`
-  height: 200vh;
+  height: 100vh;
   width: 100vw;
   display: flex;
   justify-content: space-evenly;
@@ -35,6 +36,12 @@ const Box2 = styled(BoxTemplate)`
 const Box3 = styled(BoxTemplate)`
   width: 200px;
   height: 200px;
+`;
+const Box4 = styled(BoxTemplate)`
+  width: 400px;
+  height: 200px;
+  position: absolute;
+  top: 100px;
 `;
 
 const Circle = styled(motion.div)`
@@ -119,9 +126,27 @@ const svgVariants = {
   },
 };
 
+const box4Variants = {
+  initial: {
+    opacity: 0,
+    scale: 0,
+  },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    rotateZ: 360,
+  },
+  leaving: {
+    opacity: 0,
+    scale: 0,
+    y: 50,
+  },
+};
+
 function App() {
   const constraintBoxRef = useRef<HTMLDivElement>(null);
-  // interpolation value
+
+  // interpolation values
   const x = useMotionValue(0);
   const rotateZ = useTransform(x, [-200, 200], [-360, 360]);
   const background = useTransform(
@@ -134,6 +159,10 @@ function App() {
   );
   const { scrollY, scrollYProgress } = useViewportScroll();
   const scale = useTransform(scrollYProgress, [0, 1], [1, 2]);
+
+  // anmation presence values
+  const [showing, setShowing] = useState(true);
+  const toggleShowing = () => setShowing((prev) => !prev);
 
   useEffect(() => {
     x.onChange(() => console.log(x.get()));
@@ -168,13 +197,26 @@ function App() {
       {/* <Box3 drag='x' dragSnapToOrigin style={{ x, scale, rotateZ }} /> */}
 
       {/* SVG animation */}
-      <Svg
+      {/* <Svg
         focusable='false'
         xmlns='http://www.w3.org/2000/svg'
         viewBox='0 0 448 512'
       >
         <motion.path variants={svgVariants} initial='start' animate='end' />
-      </Svg>
+      </Svg> */}
+
+      {/* AnimatePresence */}
+      <AnimatePresence>
+        {showing ? (
+          <Box4
+            variants={box4Variants}
+            initial='initial'
+            animate='visible'
+            exit='leaving'
+          />
+        ) : null}
+      </AnimatePresence>
+      <button onClick={toggleShowing}>Click</button>
     </Wrapper>
   );
 }
