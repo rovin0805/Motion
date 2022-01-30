@@ -2,14 +2,14 @@ import { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import {
   motion,
-  MotionValue,
   useMotionValue,
   useTransform,
+  useViewportScroll,
   Variants,
 } from 'framer-motion';
 
-const Wrapper = styled.div`
-  height: 100vh;
+const Wrapper = styled(motion.div)`
+  height: 200vh;
   width: 100vw;
   display: flex;
   justify-content: space-evenly;
@@ -94,15 +94,27 @@ const box2Variants: Variants = {
 
 function App() {
   const constraintBoxRef = useRef<HTMLDivElement>(null);
+  // interpolation value
   const x = useMotionValue(0);
-  const scale = useTransform(x, [-200, 0, 200], [1.5, 1, 0.1]); // interpolation value
+  const rotateZ = useTransform(x, [-200, 200], [-360, 360]);
+  const background = useTransform(
+    x,
+    [-500, 500],
+    [
+      'linear-gradient(135deg, rgb(0, 210, 238), rgb(0, 83, 238))',
+      'linear-gradient(135deg, rgb(0, 238, 155), rgb(238, 178, 0))',
+    ]
+  );
+  const { scrollY, scrollYProgress } = useViewportScroll();
+  const scale = useTransform(scrollYProgress, [0, 1], [1, 2]);
 
   useEffect(() => {
     x.onChange(() => console.log(x.get()));
-  }, [x]);
+    scrollY.onChange(() => console.log(scrollY.get(), scrollYProgress.get()));
+  }, [x, scrollY, scrollYProgress]);
 
   return (
-    <Wrapper>
+    <Wrapper style={{ background }}>
       {/* variants */}
       <Box variants={boxVariants} initial='start' animate='end'>
         <Circle variants={circleVariants} />
@@ -126,7 +138,7 @@ function App() {
       </ConstraintBox>
 
       {/* motion values */}
-      <Box3 drag='x' dragSnapToOrigin style={{ x, scale }} />
+      <Box3 drag='x' dragSnapToOrigin style={{ x, scale, rotateZ }} />
     </Wrapper>
   );
 }
