@@ -22,26 +22,30 @@ const BoxTemplate = styled(motion.div)`
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1), 0 10px 20px rgba(0, 0, 0, 0.06);
   border-radius: 15px;
   background-color: rgba(255, 255, 255, 1);
+  width: 200px;
+  height: 200px;
 `;
 const Box = styled(BoxTemplate)`
   grid-template-columns: repeat(2, 1fr);
-  width: 200px;
-  height: 200px;
   background-color: rgba(255, 255, 255, 0.2);
 `;
 const Box2 = styled(BoxTemplate)`
   width: 50px;
   height: 50px;
 `;
-const Box3 = styled(BoxTemplate)`
-  width: 200px;
-  height: 200px;
-`;
+const Box3 = styled(BoxTemplate)``;
 const Box4 = styled(BoxTemplate)`
   width: 400px;
-  height: 200px;
   position: absolute;
   top: 100px;
+`;
+const SliderBox = styled(BoxTemplate)`
+  position: absolute;
+  top: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 28px;
 `;
 
 const Circle = styled(motion.div)`
@@ -73,6 +77,7 @@ const Svg = styled.svg`
   } */
 `;
 
+// variants
 const boxVariants: Variants = {
   start: {
     opacity: 0,
@@ -143,6 +148,23 @@ const box4Variants = {
   },
 };
 
+const sliderVariants = {
+  invisible: {
+    x: 500,
+    opacity: 0,
+    scale: 0,
+  },
+  visible: {
+    x: 0,
+    opacity: 1,
+    scale: 1,
+    transition: {
+      duration: 1,
+    },
+  },
+  exit: { x: -500, opacity: 0, scale: 0, transition: { duration: 1 } },
+};
+
 function App() {
   const constraintBoxRef = useRef<HTMLDivElement>(null);
 
@@ -155,14 +177,21 @@ function App() {
     [
       'linear-gradient(135deg, rgb(0, 210, 238), rgb(0, 83, 238))',
       'linear-gradient(135deg, rgb(0, 238, 155), rgb(238, 178, 0))',
-    ]
+    ],
   );
   const { scrollY, scrollYProgress } = useViewportScroll();
   const scale = useTransform(scrollYProgress, [0, 1], [1, 2]);
 
   // anmation presence values
   const [showing, setShowing] = useState(true);
-  const toggleShowing = () => setShowing((prev) => !prev);
+  const toggleShowing = () => setShowing(prev => !prev);
+
+  // slider values
+  const numArr = [1, 2, 3, 4, 5];
+  const [visible, setVisible] = useState(1);
+  const nextPlease = () =>
+    setVisible(prev => (prev === numArr.length ? numArr.length : prev + 1));
+  const prevPlease = () => setVisible(prev => (prev === 1 ? 1 : prev - 1));
 
   useEffect(() => {
     x.onChange(() => console.log(x.get()));
@@ -206,7 +235,7 @@ function App() {
       </Svg> */}
 
       {/* AnimatePresence */}
-      <AnimatePresence>
+      {/* <AnimatePresence>
         {showing ? (
           <Box4
             variants={box4Variants}
@@ -216,7 +245,25 @@ function App() {
           />
         ) : null}
       </AnimatePresence>
-      <button onClick={toggleShowing}>Click</button>
+      <button onClick={toggleShowing}>Click</button> */}
+
+      {/* Slider */}
+      <AnimatePresence>
+        {numArr.map(i =>
+          i === visible ? (
+            <SliderBox
+              variants={sliderVariants}
+              initial='invisible'
+              animate='visible'
+              exit='exit'
+              key={i}>
+              {i}
+            </SliderBox>
+          ) : null,
+        )}
+      </AnimatePresence>
+      <button onClick={nextPlease}>next</button>
+      <button onClick={prevPlease}>prev</button>
     </Wrapper>
   );
 }
