@@ -149,20 +149,25 @@ const box4Variants = {
 };
 
 const sliderVariants = {
-  invisible: {
-    x: 500,
+  entry: (isBack: boolean) => ({
+    x: isBack ? -250 : 250,
     opacity: 0,
     scale: 0,
-  },
-  visible: {
+  }),
+  center: {
     x: 0,
     opacity: 1,
     scale: 1,
     transition: {
-      duration: 1,
+      duration: 0.5,
     },
   },
-  exit: { x: -500, opacity: 0, scale: 0, transition: { duration: 1 } },
+  exit: (isBack: boolean) => ({
+    x: isBack ? 250 : -250,
+    opacity: 0,
+    scale: 0,
+    transition: { duration: 0.5 },
+  }),
 };
 
 function App() {
@@ -189,9 +194,15 @@ function App() {
   // slider values
   const numArr = [1, 2, 3, 4, 5];
   const [visible, setVisible] = useState(1);
-  const nextPlease = () =>
+  const [isBack, setIsBack] = useState(false);
+  const callNext = () => {
+    setIsBack(false);
     setVisible(prev => (prev === numArr.length ? numArr.length : prev + 1));
-  const prevPlease = () => setVisible(prev => (prev === 1 ? 1 : prev - 1));
+  };
+  const callPrev = () => {
+    setIsBack(true);
+    setVisible(prev => (prev === 1 ? 1 : prev - 1));
+  };
 
   useEffect(() => {
     x.onChange(() => console.log(x.get()));
@@ -248,22 +259,19 @@ function App() {
       <button onClick={toggleShowing}>Click</button> */}
 
       {/* Slider */}
-      <AnimatePresence>
-        {numArr.map(i =>
-          i === visible ? (
-            <SliderBox
-              variants={sliderVariants}
-              initial='invisible'
-              animate='visible'
-              exit='exit'
-              key={i}>
-              {i}
-            </SliderBox>
-          ) : null,
-        )}
+      <AnimatePresence custom={isBack} exitBeforeEnter>
+        <SliderBox
+          custom={isBack}
+          variants={sliderVariants}
+          initial='entry'
+          animate='center'
+          exit='exit'
+          key={visible}>
+          {visible}
+        </SliderBox>
       </AnimatePresence>
-      <button onClick={nextPlease}>next</button>
-      <button onClick={prevPlease}>prev</button>
+      <button onClick={callPrev}>prev</button>
+      <button onClick={callNext}>next</button>
     </Wrapper>
   );
 }
