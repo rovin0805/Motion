@@ -47,6 +47,13 @@ const SliderBox = styled(BoxTemplate)`
   align-items: center;
   font-size: 28px;
 `;
+const Box6 = styled(BoxTemplate)`
+  width: 300px;
+  height: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
 
 const Circle = styled(motion.div)`
   background-color: white;
@@ -55,6 +62,13 @@ const Circle = styled(motion.div)`
   place-self: center;
   border-radius: 35px;
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1), 0 10px 20px rgba(0, 0, 0, 0.06);
+`;
+const Circle2 = styled(Circle)`
+  background-color: #00a5ff;
+  height: 100px;
+  width: 100px;
+  border-radius: 50px;
+  place-self: initial;
 `;
 
 const ConstraintBox = styled.div`
@@ -204,13 +218,17 @@ function App() {
     setVisible(prev => (prev === 1 ? 1 : prev - 1));
   };
 
+  // layout values
+  const [clicked, setClicked] = useState(false);
+  const toggleClicked = () => setClicked(prev => !prev);
+
   useEffect(() => {
     x.onChange(() => console.log(x.get()));
     scrollY.onChange(() => console.log(scrollY.get(), scrollYProgress.get()));
   }, [x, scrollY, scrollYProgress]);
 
   return (
-    <Wrapper style={{ background }}>
+    <Wrapper style={{ background }} onClick={toggleClicked}>
       {/* variants */}
       {/* <Box variants={boxVariants} initial='start' animate='end'>
         <Circle variants={circleVariants} />
@@ -259,7 +277,7 @@ function App() {
       <button onClick={toggleShowing}>Click</button> */}
 
       {/* Slider */}
-      <AnimatePresence custom={isBack} exitBeforeEnter>
+      {/* <AnimatePresence custom={isBack} exitBeforeEnter>
         <SliderBox
           custom={isBack}
           variants={sliderVariants}
@@ -271,7 +289,28 @@ function App() {
         </SliderBox>
       </AnimatePresence>
       <button onClick={callPrev}>prev</button>
-      <button onClick={callNext}>next</button>
+      <button onClick={callNext}>next</button> */}
+
+      {/* Layout Animation */}
+      {/* <Box6
+        style={{
+          justifyContent: clicked ? 'center' : 'flex-start',
+          alignItems: clicked ? 'center' : 'flex-start',
+        }}>
+        <Circle2 layout />
+      </Box6>
+
+      {/* Shared Layout Animdation */}
+      <Box6>
+        {!clicked ? (
+          <Circle2 layoutId='circle' style={{ borderRadius: 50 }} />
+        ) : null}
+      </Box6>
+      <Box6>
+        {clicked ? (
+          <Circle2 layoutId='circle' style={{ borderRadius: 0, scale: 1.5 }} />
+        ) : null}
+      </Box6>
     </Wrapper>
   );
 }
